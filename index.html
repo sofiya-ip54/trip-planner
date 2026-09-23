@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
     <header>
         <h1>Планувальник подорожей</h1>
         <nav>
@@ -20,18 +19,22 @@
         <section id="my-trips">
             <h2>Мої подорожі</h2>
             
-            <article>
-                <h3>Париж, Франція</h3>
+            <article class="card">
                 <img src="assets/img/paris.jpg" alt="Ейфелева вежа в Парижі">
-                <p>Дати: 10.10.2026 - 15.10.2026</p>
-                <button>Деталі</button>
+                <div class="card-content">
+                    <h3>Париж, Франція</h3>
+                    <p>Дати: 10.10.2026 - 15.10.2026</p>
+                    <button>Деталі</button>
+                </div>
             </article>
 
-            <article>
-                <h3>Кіото, Японія</h3>
+            <article class="card">
                 <img src="assets/img/kyoto.jpg" alt="Храм у Кіото восени">
-                <p>Дати: 05.11.2026 - 20.11.2026</p>
-                <button>Деталі</button>
+                <div class="card-content">
+                    <h3>Кіото, Японія</h3>
+                    <p>Дати: 05.11.2026 - 20.11.2026</p>
+                    <button>Деталі</button>
+                </div>
             </article>
         </section>
 
@@ -43,7 +46,10 @@
 
     <aside>
         <h2>Бюджет подорожі</h2>
-        <p>Загальна сума: 1500 USD</p>
+        <div class="budget-item">Переліт: 500 USD</div>
+        <div class="budget-item">Проживання: 700 USD</div>
+        <div class="budget-item">Розваги: 300 USD</div>
+        <p><strong>Загальна сума: 1500 USD</strong></p>
     </aside>
 
     <footer>
