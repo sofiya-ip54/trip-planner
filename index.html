@@ -15,42 +15,49 @@
         </nav>
     </header>
 
-    <main>
-        <section id="my-trips">
-            <h2>Мої подорожі</h2>
-            
-            <article class="card">
-                <img src="assets/img/paris.jpg" alt="Ейфелева вежа в Парижі">
-                <div class="card-content">
-                    <h3>Париж, Франція</h3>
-                    <p>Дати: 10.10.2026 - 15.10.2026</p>
-                    <button>Деталі</button>
-                </div>
-            </article>
+    <!-- ДОДАНО: Контейнер макета для десктопу (щоб main і aside стояли поруч) -->
+    <div class="layout">
+        <main>
+            <section id="my-trips">
+                <h2>Мої подорожі</h2>
+                
+                <!-- ДОДАНО: Контейнер для сітки карток -->
+                <div class="cards">
+                    <article class="card">
+                        <img src="assets/img/paris.jpg" alt="Ейфелева вежа в Парижі">
+                        <div class="card-content">
+                            <h3>Париж, Франція</h3>
+                            <p>Дати: 10.10.2026 - 15.10.2026</p>
+                            <button>Деталі</button>
+                        </div>
+                    </article>
 
-            <article class="card">
-                <img src="assets/img/kyoto.jpg" alt="Храм у Кіото восени">
-                <div class="card-content">
-                    <h3>Кіото, Японія</h3>
-                    <p>Дати: 05.11.2026 - 20.11.2026</p>
-                    <button>Деталі</button>
-                </div>
-            </article>
-        </section>
+                    <article class="card">
+                        <img src="assets/img/kyoto.jpg" alt="Храм у Кіото восени">
+                        <div class="card-content">
+                            <h3>Кіото, Японія</h3>
+                            <p>Дати: 05.11.2026 - 20.11.2026</p>
+                            <button>Деталі</button>
+                        </div>
+                    </article>
+                </div> <!-- ЗАКРИТТЯ .cards -->
+                
+            </section>
 
-        <section id="trip-details">
-            <h2>Деталі обраної подорожі</h2>
-            <p>Виберіть подорож зі списку, щоб переглянути маршрут і пункти призначення.</p>
-        </section>
-    </main>
+            <section id="trip-details">
+                <h2>Деталі обраної подорожі</h2>
+                <p>Виберіть подорож зі списку, щоб переглянути маршрут і пункти призначення.</p>
+            </section>
+        </main>
 
-    <aside>
-        <h2>Бюджет подорожі</h2>
-        <div class="budget-item">Переліт: 500 USD</div>
-        <div class="budget-item">Проживання: 700 USD</div>
-        <div class="budget-item">Розваги: 300 USD</div>
-        <p><strong>Загальна сума: 1500 USD</strong></p>
-    </aside>
+        <aside>
+            <h2>Бюджет подорожі</h2>
+            <div class="budget-item">Переліт: 500 USD</div>
+            <div class="budget-item">Проживання: 700 USD</div>
+            <div class="budget-item">Розваги: 300 USD</div>
+            <p><strong>Загальна сума: 1500 USD</strong></p>
+        </aside>
+    </div> <!-- ЗАКРИТТЯ .layout -->
 
     <footer>
         <p>&copy; 2026 Навчальний проєкт. Автор: Крикун Софія</p>
