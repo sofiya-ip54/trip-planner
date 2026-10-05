@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Планувальник подорожей</title>
+    
+    <!-- Підключення шрифтів Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -15,32 +21,48 @@
         </nav>
     </header>
 
-    <!-- ДОДАНО: Контейнер макета для десктопу (щоб main і aside стояли поруч) -->
     <div class="layout">
         <main>
             <section id="my-trips">
                 <h2>Мої подорожі</h2>
                 
-                <!-- ДОДАНО: Контейнер для сітки карток -->
                 <div class="cards">
+                    <!-- Картка 1 -->
                     <article class="card">
                         <img src="assets/img/paris.jpg" alt="Ейфелева вежа в Парижі">
                         <div class="card-content">
                             <h3>Париж, Франція</h3>
+                            <!-- Мітка статусу -->
+                            <p class="status-wrap"><span class="status status-completed">Завершено</span></p>
                             <p>Дати: 10.10.2026 - 15.10.2026</p>
                             <button>Деталі</button>
                         </div>
                     </article>
 
+                    <!-- Картка 2 -->
                     <article class="card">
                         <img src="assets/img/kyoto.jpg" alt="Храм у Кіото восени">
                         <div class="card-content">
                             <h3>Кіото, Японія</h3>
+                            <!-- Мітка статусу -->
+                            <p class="status-wrap"><span class="status status-planned">Заплановано</span></p>
                             <p>Дати: 05.11.2026 - 20.11.2026</p>
                             <button>Деталі</button>
                         </div>
                     </article>
-                </div> <!-- ЗАКРИТТЯ .cards -->
+
+                    <!-- Картка 3 (Рим з новою картинкою) -->
+                    <article class="card">
+                        <img src="assets/img/rome.jpg" alt="Рим, Італія">
+                        <div class="card-content">
+                            <h3>Рим, Італія</h3>
+                            <!-- Мітка статусу -->
+                            <p class="status-wrap"><span class="status status-process">В процесі</span></p>
+                            <p>Дати: 12.12.2026 - 18.12.2026</p>
+                            <button>Деталі</button>
+                        </div>
+                    </article>
+                </div>
                 
             </section>
 
@@ -55,9 +77,10 @@
             <div class="budget-item">Переліт: 500 USD</div>
             <div class="budget-item">Проживання: 700 USD</div>
             <div class="budget-item">Розваги: 300 USD</div>
-            <p><strong>Загальна сума: 1500 USD</strong></p>
+            <!-- Суму обгорнуто в span для акцентного стилю -->
+            <p class="budget-total">Загальна сума: <span class="budget-accent">1500 USD</span></p>
         </aside>
-    </div> <!-- ЗАКРИТТЯ .layout -->
+    </div>
 
     <footer>
         <p>&copy; 2026 Навчальний проєкт. Автор: Крикун Софія</p>
