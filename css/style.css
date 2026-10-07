@@ -1,16 +1,45 @@
+/* ===== Шрифти (практикум 5) ===== */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap');
+
+/* ===== Колірна схема (практикум 5) =====
+   60 % — нейтральний фон, 30 % — «море», 10 % — теплий акцент */
+:root {
+    --bg: #fcf9f2;
+    --surface: #ffffff;
+    --text: #1e2a32;
+    --text-muted: #4b5963;
+
+    --primary: #0e6f6b;
+    --primary-dark: #0a5552;
+    --sky: #e4f3f7;
+    --deep-sea: #12343b;
+
+    --accent: #b8400e;
+
+    --done-fg: #1b5e34;     --done-bg: #ddf3e4;
+    --planned-fg: #1a4f8b;  --planned-bg: #dcebfa;
+    --progress-fg: #8a4b08; --progress-bg: #fde9d3;
+}
+
 /* ===== Reset ===== */
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
 /* ===== Типографіка ===== */
+/* Шкала: 14 / 16 / 20 / 24 / 28 / 36 px */
 body {
     margin: 0;
-    font-family: system-ui, sans-serif;
+    font-family: 'Open Sans', Verdana, Arial, sans-serif;
     font-size: 1rem;
     line-height: 1.5;
-    color: #333;
-    background-color: #fcf9f2;
+    color: var(--text);
+    background-color: var(--bg);
+}
+
+h1, h2, h3 {
+    font-family: 'Montserrat', Verdana, Arial, sans-serif;
+    line-height: 1.25;
 }
 
 img {
@@ -24,16 +53,16 @@ header {
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    background-color: #20b2aa;
-    color: white;
+    background-color: var(--primary);
+    color: #ffffff;
     padding: 20px;
-    border-bottom: 4px solid #178b85;
+    border-bottom: 4px solid var(--primary-dark);
     text-align: center;
 }
 
 header h1 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
 }
 
 header nav {
@@ -44,13 +73,16 @@ header nav {
 }
 
 header nav a {
-    color: white;
+    color: #ffffff;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
+    padding: 4px 2px;
+    border-bottom: 2px solid transparent;
 }
 
-header nav a:hover {
-    text-decoration: underline;
+header nav a:hover,
+header nav a:focus-visible {
+    border-bottom-color: #ffffff;
 }
 
 /* ===== Макет: main + aside ===== */
@@ -70,9 +102,11 @@ section {
 }
 
 section h2 {
-    color: #20b2aa;
-    border-bottom: 2px solid #e0dcd3;
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--sky);
     padding-bottom: 10px;
+    margin: 0 0 16px;
 }
 
 /* ===== Картки (Grid) ===== */
@@ -83,11 +117,17 @@ section h2 {
 }
 
 .card {
-    background-color: white;
+    background-color: var(--surface);
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(14, 111, 107, 0.18);
+    transform: translateY(-2px);
 }
 
 .cards .card {
@@ -99,25 +139,88 @@ section h2 {
     height: 200px;
     object-fit: cover;
     display: block;
-    background-color: #e0dcd3;
+    background-color: var(--sky);
 }
 
 .card-content {
     padding: 14px;
 }
 
+/* Заголовок картки: 20px (≥ 18px за вимогою варіанта) */
+.card-content h2,
+.card-content h3 {
+    font-size: 1.25rem;
+    margin: 0 0 8px;
+    color: var(--text);
+}
+
+.card-content p {
+    margin: 0 0 8px;
+}
+
+.card-content p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* ===== ЧІТКА ВИМОГА: статус подорожі — іконка + текст + власний колір ===== */
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 10px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.status-completed { color: var(--done-fg);     background-color: var(--done-bg); }
+.status-planned   { color: var(--planned-fg);  background-color: var(--planned-bg); }
+.status-process   { color: var(--progress-fg); background-color: var(--progress-bg); }
+
+.status-completed::before { content: "✓"; }
+.status-planned::before   { content: "📅"; }
+.status-process::before   { content: "✈"; }
+
+/* ===== Кнопки ===== */
+button {
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    min-height: 44px;
+    padding: 0 20px;
+    margin-top: 8px;
+    color: #ffffff;
+    background-color: var(--primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: var(--accent);
+}
+
+button:focus-visible {
+    outline: 3px solid var(--primary-dark);
+    outline-offset: 2px;
+}
+
 /* ===== Aside (бюджет) ===== */
 aside {
     margin: 0;
     padding: 20px;
-    background-color: white;
-    border: 2px dashed #20b2aa;
+    background-color: var(--surface);
+    border: 2px dashed var(--primary);
     border-radius: 10px;
 }
 
 aside h2 {
     margin-top: 0;
-    color: #20b2aa;
+    font-size: 1.5rem;
+    color: var(--primary-dark);
 }
 
 .budget-item {
@@ -129,19 +232,36 @@ aside h2 {
     border-bottom: none;
 }
 
+/* НЕЧІТКА ВИМОГА («надихати на подорожі»): акцентне число бюджету */
+.budget-total {
+    margin: 8px 0 0;
+    padding-top: 12px;
+    border-top: 2px solid var(--sky);
+    font-weight: 600;
+}
+
+.budget-accent {
+    display: block;
+    font-family: 'Montserrat', Verdana, Arial, sans-serif;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--accent);
+}
+
 /* ===== Footer ===== */
 footer {
-    background-color: #e0dcd3;
-    color: #666;
+    background-color: var(--deep-sea);
+    color: #e4eef0;
     text-align: center;
     padding: 20px;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
 }
 
 /* ===== Планшет (від 600px) ===== */
 @media (min-width: 600px) {
     header h1 {
-        font-size: 2rem;
+        font-size: 2.25rem;
     }
 
     .cards {
