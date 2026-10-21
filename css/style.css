@@ -208,6 +208,23 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
+/* ===== Практикум 7: стилі для карток, створених через DOM ===== */
+/* Умовні класи за бюджетом: budget / expensive */
+.card.budget {
+    border-left: 6px solid var(--done-fg);
+}
+
+.card.expensive {
+    border-left: 6px solid var(--accent);
+}
+
+/* Підсумок під списком подорожей */
+#trips-count {
+    margin: 16px 0 0;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
 /* ===== Aside (бюджет) ===== */
 aside {
     margin: 0;

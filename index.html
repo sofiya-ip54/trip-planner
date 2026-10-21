@@ -15,7 +15,7 @@
     
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- Практикум 6: підключення скрипта (defer — виконується після побудови DOM) -->
+    <!-- Практикум 6–7: підключення скрипта (defer — виконується після побудови DOM) -->
     <script src="js/script.js" defer></script>
 </head>
 <body>
@@ -32,8 +32,8 @@
             <section id="my-trips">
                 <h2>Мої подорожі</h2>
                 
-                <div class="cards">
-                    <!-- Картка 1 -->
+                <div class="cards" id="trips-list">
+                    <!-- Картка 1 (статична заглушка з практикуму 2 — прибирається у script.js через .remove()) -->
                     <article class="card">
                         <img src="assets/img/paris.jpg" alt="Ейфелева вежа в Парижі">
                         <div class="card-content">
@@ -69,7 +69,9 @@
                         </div>
                     </article>
                 </div>
-                
+
+                <!-- Практикум 7: підсумок, який оновлюється зі script.js -->
+                <p id="trips-count">Подорожей: —</p>
             </section>
 
             <section id="trip-details">
