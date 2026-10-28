@@ -266,6 +266,98 @@ aside h2 {
     color: var(--accent);
 }
 
+/* ===== Практикум 8: форма додавання подорожі ===== */
+#trip-form {
+    display: grid;
+    gap: 16px;
+    max-width: 480px;
+    padding: 20px;
+    background-color: var(--surface);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-row {
+    display: grid;
+    gap: 6px;
+}
+
+.form-row label {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.form-row input {
+    font-family: inherit;
+    font-size: 1rem;
+    min-height: 44px;
+    padding: 0 12px;
+    color: var(--text);
+    background-color: var(--bg);
+    border: 2px solid var(--text-muted);
+    border-radius: 8px;
+}
+
+.form-row input:focus-visible {
+    outline: 3px solid var(--primary-dark);
+    outline-offset: 2px;
+}
+
+/* Поле, яке не пройшло перевірку (після першої взаємодії) */
+.form-row input:user-invalid {
+    border-color: var(--accent);
+}
+
+/* Підказка з вартістю дня і попередженням */
+.cost-hint {
+    margin: 0;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.cost-hint.warning {
+    color: var(--accent);
+}
+
+#trip-form button {
+    margin-top: 0;
+    justify-self: start;
+}
+
+/* ===== Практикум 8: обрана картка та блок деталей ===== */
+.card {
+    cursor: pointer;
+}
+
+.card.selected {
+    outline: 3px solid var(--primary);
+    outline-offset: -3px;
+}
+
+.trip-info {
+    padding: 16px 20px;
+    background-color: var(--surface);
+    border-left: 6px solid var(--primary);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.trip-info h3 {
+    margin: 0 0 8px;
+    font-size: 1.25rem;
+    color: var(--primary-dark);
+}
+
+.trip-info ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/* Атрибут hidden має перемагати display із класів */
+[hidden] {
+    display: none !important;
+}
+
 /* ===== Footer ===== */
 footer {
     background-color: var(--deep-sea);

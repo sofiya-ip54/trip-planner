@@ -1,5 +1,6 @@
-// Практикум 6–7: Планувальник подорожей (варіант 10)
-// Практикум 6: змінні, умови, цикли, функції; практикум 7: маніпуляція DOM
+// Практикум 6–8: Планувальник подорожей (варіант 10)
+// Практикум 6: змінні, умови, цикли, функції; практикум 7: маніпуляція DOM;
+// практикум 8: обробка подій, форма, клієнтська валідація
 console.log('script.js підключено');
 
 // ===== Практикум 7, крок 2: програмно прибираємо статичні картки-заглушки з HTML =====
@@ -21,9 +22,24 @@ const trips = [
 // Поріг: подорожі з бюджетом до цього значення вважаємо бюджетними
 const BUDGET_LIMIT = 1000;
 
+// Практикум 8: «розумний» мінімум бюджету на день (USD); нижче — показуємо попередження
+const MIN_DAILY_BUDGET = 50;
+
 // ===== Практикум 7, крок 3: вибираємо контейнер списку та елемент-підсумок =====
 const listContainer = document.querySelector('#trips-list');
 const tripsCount = document.querySelector('#trips-count');
+
+// ===== Практикум 8, крок 2: вибираємо форму, її поля та елементи для виводу =====
+const form = document.querySelector('#trip-form');
+const destinationInput = document.querySelector('#destination');
+const daysInput = document.querySelector('#days');
+const budgetInput = document.querySelector('#budget');
+const costHint = document.querySelector('#cost-hint');
+const detailsPlaceholder = document.querySelector('#details-placeholder');
+const tripInfo = document.querySelector('#trip-info');
+
+// Індекс обраної подорожі (null — нічого не обрано); потрібен, щоб виділення не зникало після перемальовування
+let selectedIndex = null;
 
 // Класифікує подорож за бюджетом: «бюджетна» або «дорога»
 function classifyTrip(trip) {
@@ -53,19 +69,26 @@ function printTripsSummary(list) {
 }
 
 // ===== Практикум 7, кроки 4–7: рендер списку подорожей з масиву =====
-// Очищає контейнер і для кожної подорожі створює article: зображення, h3 (напрямок), мітка статусу,
-// дати, p (дні й бюджет) і кнопка; ставить data-cost-per-day, клас budget/expensive і додає картку в контейнер
+// Очищає контейнер і для кожної подорожі створює article: зображення (якщо є), h3 (напрямок), мітка статусу,
+// дати, p (дні й бюджет) і кнопка; ставить data-cost-per-day, data-index, клас budget/expensive
+// (і selected для обраної картки) та додає картку в контейнер
 function renderTrips(list) {
     listContainer.innerHTML = '';
 
-    for (const trip of list) {
+    for (const [index, trip] of list.entries()) {
         const card = document.createElement('article');
         card.classList.add('card');
 
-        // Зображення: атрибути src і alt
-        const img = document.createElement('img');
-        img.src = trip.image;
-        img.alt = trip.alt;
+        // Практикум 8: номер запису в масиві — за ним обробник кліку знаходить подорож
+        card.dataset.index = index;
+
+        // Зображення: атрибути src і alt (у нових подорожей картинки немає — тоді блок пропускаємо)
+        if (trip.image) {
+            const img = document.createElement('img');
+            img.src = trip.image;
+            img.alt = trip.alt;
+            card.append(img);
+        }
 
         const content = document.createElement('div');
         content.classList.add('card-content');
@@ -88,6 +111,7 @@ function renderTrips(list) {
         details.textContent = `${trip.days} днів, ${trip.budget} USD`;
 
         const button = document.createElement('button');
+        button.type = 'button';
         button.textContent = 'Деталі';
 
         // Атрибут data-cost-per-day зі значенням costPerDay(trip) з практикуму 6
@@ -100,17 +124,157 @@ function renderTrips(list) {
             card.classList.add('expensive');
         }
 
+        // Виділяємо обрану подорож
+        if (index === selectedIndex) {
+            card.classList.add('selected');
+        }
+
         content.append(title, statusWrap, dates, details, button);
-        card.append(img, content);
+        card.append(content);
         listContainer.append(card);
     }
 }
 
-// Крок 8: викликаємо рендер одразу після оголошення функції
+// Оновлює підсумок «Подорожей: N» під списком
+function updateTripsCount() {
+    tripsCount.textContent = `Подорожей: ${trips.length}`;
+}
+
+// Крок 8 (практикум 7): викликаємо рендер одразу після оголошення функції
 renderTrips(trips);
 
-// Крок 9: оновлюємо підсумковий елемент (уже наявний у HTML)
-tripsCount.textContent = `Подорожей: ${trips.length}`;
+// Крок 9 (практикум 7): оновлюємо підсумковий елемент (уже наявний у HTML)
+updateTripsCount();
+
+// ===== Практикум 8: показ деталей обраної подорожі в окремому блоці =====
+// Заповнює #trip-info даними подорожі з масиву за її індексом і показує блок
+function showTripDetails(index) {
+    const trip = trips[index];
+
+    tripInfo.innerHTML = '';
+
+    const title = document.createElement('h3');
+    title.textContent = trip.destination;
+
+    const info = document.createElement('ul');
+    const rows = [
+        `Статус: ${trip.statusText}`,
+        `Дати: ${trip.dates}`,
+        `Тривалість: ${trip.days} днів`,
+        `Бюджет: ${trip.budget} USD (${classifyTrip(trip)})`,
+        `Вартість дня: ${costPerDay(trip)} USD`
+    ];
+    for (const text of rows) {
+        const li = document.createElement('li');
+        li.textContent = text;
+        info.append(li);
+    }
+
+    tripInfo.append(title, info);
+    tripInfo.hidden = false;
+    detailsPlaceholder.hidden = true;
+}
+
+// ===== Практикум 8: делегування подій — ОДИН обробник кліку на контейнері списку =====
+// e.target — елемент, по якому клікнули (картинка, заголовок, кнопка...),
+// closest('.card') знаходить картку, якій він належить; обробник працює і для карток,
+// створених пізніше формою, тому не треба навішувати його після кожного рендеру
+listContainer.addEventListener('click', event => {
+    const card = event.target.closest('.card');
+    if (!card) {
+        return; // клік по порожньому місцю контейнера
+    }
+
+    selectedIndex = Number(card.dataset.index);
+    renderTrips(trips);              // перемальовуємо, щоб виділити обрану картку
+    showTripDetails(selectedIndex);  // виводимо деталі в блок #trip-details
+});
+
+// ===== Практикум 8: додаткова валідація days/budget — перерахунок costPerDay «на льоту» =====
+// Спрацьовує на кожну зміну days або budget: рахує вартість дня й показує попередження,
+// якщо бюджет на день менший за MIN_DAILY_BUDGET; для некоректних днів ставить власне повідомлення
+function updateCostHint() {
+    const days = Number(daysInput.value);
+    const budget = Number(budgetInput.value);
+
+    // Власні повідомлення про помилки (setCustomValidity('') повертає поле в коректний стан)
+    if (daysInput.value !== '' && !Number.isInteger(days)) {
+        daysInput.setCustomValidity('Кількість днів має бути цілим числом');
+    } else if (daysInput.value !== '' && days < 1) {
+        daysInput.setCustomValidity('Подорож має тривати щонайменше 1 день');
+    } else {
+        daysInput.setCustomValidity('');
+    }
+
+    if (budgetInput.value !== '' && budget < 0) {
+        budgetInput.setCustomValidity('Бюджет не може бути від’ємним');
+    } else {
+        budgetInput.setCustomValidity('');
+    }
+
+    // Перерахунок можливий, лише коли обидва поля заповнені коректно
+    costHint.classList.remove('warning');
+    if (daysInput.value === '' || budgetInput.value === '' || days < 1 || budget < 0) {
+        costHint.textContent = 'Вартість дня: —';
+        return;
+    }
+
+    const perDay = costPerDay({ budget, days });
+    if (perDay < MIN_DAILY_BUDGET) {
+        costHint.textContent =
+            `Вартість дня: ${perDay} USD. Попередження: менше ${MIN_DAILY_BUDGET} USD на день — бюджет замалий.`;
+        costHint.classList.add('warning');
+    } else {
+        costHint.textContent = `Вартість дня: ${perDay} USD`;
+    }
+}
+
+daysInput.addEventListener('input', updateCostHint);
+budgetInput.addEventListener('input', updateCostHint);
+
+// ===== Практикум 8: обробка надсилання форми без перезавантаження сторінки =====
+// 1) preventDefault — скасовує стандартне перезавантаження; 2) зчитуємо поля;
+// 3) збираємо новий об'єкт тієї ж форми, що й елементи масиву trips; 4) push і повторний рендер;
+// 5) form.reset() і скидання підказки. Порожні обов'язкові поля блокує сам браузер (required)
+form.addEventListener('submit', event => {
+    event.preventDefault();
+
+    const destination = destinationInput.value.trim();
+    const days = Number(daysInput.value);
+    const budget = Number(budgetInput.value);
+
+    // Пробіли в required-полі проходять перевірку браузера, тому перевіряємо вручну
+    if (destination === '') {
+        destinationInput.setCustomValidity('Вкажіть напрямок подорожі');
+        destinationInput.reportValidity();
+        return;
+    }
+
+    const newTrip = {
+        destination: destination,
+        days: days,
+        budget: budget,
+        image: '',
+        alt: destination,
+        status: 'planned',
+        statusText: 'Заплановано',
+        dates: 'Дати уточнюються'
+    };
+
+    trips.push(newTrip);
+    renderTrips(trips);
+    updateTripsCount();
+
+    form.reset();
+    updateCostHint();
+
+    console.log(`Додано подорож: ${newTrip.destination}, ${costPerDay(newTrip)} USD/день`);
+});
+
+// Коли користувач виправляє напрямок — прибираємо власне повідомлення про помилку
+destinationInput.addEventListener('input', () => {
+    destinationInput.setCustomValidity('');
+});
 
 // ===== Виклики з практикуму 6 =====
 printTripsSummary(trips);

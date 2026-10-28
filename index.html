@@ -7,15 +7,15 @@
 
     <!-- Іконка-заглушка: прибирає помилку favicon.ico 404 у консолі -->
     <link rel="icon" href="data:,">
-    
+
     <!-- Підключення шрифтів Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- Практикум 6–7: підключення скрипта (defer — виконується після побудови DOM) -->
+    <!-- Практикум 6–8: підключення скрипта (defer — виконується після побудови DOM) -->
     <script src="js/script.js" defer></script>
 </head>
 <body>
@@ -23,6 +23,7 @@
         <h1>Планувальник подорожей</h1>
         <nav>
             <a href="#my-trips">Мої подорожі</a>
+            <a href="#add-trip">Нова подорож</a>
             <a href="#trip-details">Деталі подорожі</a>
         </nav>
     </header>
@@ -31,7 +32,7 @@
         <main>
             <section id="my-trips">
                 <h2>Мої подорожі</h2>
-                
+
                 <div class="cards" id="trips-list">
                     <!-- Картка 1 (статична заглушка з практикуму 2 — прибирається у script.js через .remove()) -->
                     <article class="card">
@@ -74,9 +75,41 @@
                 <p id="trips-count">Подорожей: —</p>
             </section>
 
+            <!-- Практикум 8: форма додавання нової подорожі -->
+            <section id="add-trip">
+                <h2>Додати подорож</h2>
+
+                <form id="trip-form">
+                    <div class="form-row">
+                        <label for="destination">Напрямок</label>
+                        <input type="text" id="destination" name="destination" required
+                               placeholder="Наприклад: Лісабон, Португалія">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="days">Кількість днів</label>
+                        <input type="number" id="days" name="days" required min="1" step="1"
+                               placeholder="Наприклад: 5">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="budget">Бюджет, USD</label>
+                        <input type="number" id="budget" name="budget" required min="0"
+                               placeholder="Наприклад: 800">
+                    </div>
+
+                    <!-- Живий перерахунок вартості дня і попередження (додаткова валідація) -->
+                    <p id="cost-hint" class="cost-hint" aria-live="polite">Вартість дня: —</p>
+
+                    <button type="submit">Додати подорож</button>
+                </form>
+            </section>
+
             <section id="trip-details">
                 <h2>Деталі обраної подорожі</h2>
-                <p>Виберіть подорож зі списку, щоб переглянути маршрут і пункти призначення.</p>
+                <p id="details-placeholder">Виберіть подорож зі списку, щоб переглянути маршрут і пункти призначення.</p>
+                <!-- Практикум 8: сюди скрипт виводить деталі картки, на яку клікнули -->
+                <div id="trip-info" class="trip-info" hidden></div>
             </section>
         </main>
 
