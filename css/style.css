@@ -400,3 +400,67 @@ footer {
         gap: 20px;
     }
 }
+
+/* ===== Практикум 9: клієнт API країн ===== */
+#country-form {
+    display: grid;
+    gap: 16px;
+    max-width: 480px;
+    margin-bottom: 16px;
+    padding: 20px;
+    background-color: var(--surface);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.form-buttons button {
+    margin-top: 0;
+}
+
+#country-refresh-btn {
+    color: var(--primary-dark);
+    background-color: var(--sky);
+    border: 2px solid var(--primary);
+}
+
+#country-refresh-btn:hover:not(:disabled) {
+    color: #ffffff;
+    background-color: var(--primary);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.country-loading {
+    margin: 0 0 16px;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.country-error {
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--accent);
+    background-color: var(--progress-bg);
+    border-left: 6px solid var(--accent);
+    border-radius: 8px;
+}
+
+#country-list .card {
+    cursor: default;
+}
+
+#country-list .card img {
+    height: 140px;
+    object-fit: contain;
+    padding: 12px;
+}

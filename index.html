@@ -24,6 +24,7 @@
         <nav>
             <a href="#my-trips">Мої подорожі</a>
             <a href="#add-trip">Нова подорож</a>
+            <a href="#country-info">Про країну</a>
             <a href="#trip-details">Деталі подорожі</a>
         </nav>
     </header>
@@ -103,6 +104,29 @@
 
                     <button type="submit">Додати подорож</button>
                 </form>
+            </section>
+
+            <!-- Практикум 9: клієнт для API REST Countries (варіант 10) -->
+            <section id="country-info">
+                <h2>Інформація про країну</h2>
+
+                <form id="country-form">
+                    <div class="form-row">
+                        <label for="country-name">Назва країни (англійською)</label>
+                        <input type="text" id="country-name" name="country-name" required
+                               value="Italy" placeholder="Наприклад: Portugal">
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" id="country-search-btn">Знайти</button>
+                        <button type="button" id="country-refresh-btn">Оновити</button>
+                    </div>
+                </form>
+
+                <!-- Стан завантаження і повідомлення про помилку -->
+                <p id="country-loading" class="country-loading" aria-live="polite" hidden>Завантаження…</p>
+                <p id="country-error" class="country-error" role="alert" hidden></p>
+
+                <div class="cards" id="country-list"></div>
             </section>
 
             <section id="trip-details">

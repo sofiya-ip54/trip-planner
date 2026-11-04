@@ -1,6 +1,6 @@
-// Практикум 6–8: Планувальник подорожей (варіант 10)
+// Практикум 6–9: Планувальник подорожей (варіант 10)
 // Практикум 6: змінні, умови, цикли, функції; практикум 7: маніпуляція DOM;
-// практикум 8: обробка подій, форма, клієнтська валідація
+// практикум 8: обробка подій, форма, клієнтська валідація; практикум 9: fetch/async/await, REST Countries
 console.log('script.js підключено');
 
 // ===== Практикум 7, крок 2: програмно прибираємо статичні картки-заглушки з HTML =====
@@ -69,11 +69,13 @@ function printTripsSummary(list) {
 }
 
 // ===== Практикум 7, кроки 4–7: рендер списку подорожей з масиву =====
+// Практикум 9: функція стала універсальною — другим параметром приймає контейнер
+// (за замовчуванням список подорожей), тому її повторно використовує і клієнт API країн
 // Очищає контейнер і для кожної подорожі створює article: зображення (якщо є), h3 (напрямок), мітка статусу,
 // дати, p (дні й бюджет) і кнопка; ставить data-cost-per-day, data-index, клас budget/expensive
 // (і selected для обраної картки) та додає картку в контейнер
-function renderTrips(list) {
-    listContainer.innerHTML = '';
+function renderTrips(list, container = listContainer) {
+    container.innerHTML = '';
 
     for (const [index, trip] of list.entries()) {
         const card = document.createElement('article');
@@ -96,42 +98,57 @@ function renderTrips(list) {
         const title = document.createElement('h3');
         title.textContent = trip.destination;
 
-        // Мітка статусу з практикуму 5 (іконка додається в CSS)
-        const statusWrap = document.createElement('p');
-        statusWrap.classList.add('status-wrap');
-        const status = document.createElement('span');
-        status.classList.add('status', `status-${trip.status}`);
-        status.textContent = trip.statusText;
-        statusWrap.append(status);
-
-        const dates = document.createElement('p');
-        dates.textContent = `Дати: ${trip.dates}`;
-
+        // Рядок з описом: для країн (практикум 9) він приходить готовим у trip.details
         const details = document.createElement('p');
-        details.textContent = `${trip.days} днів, ${trip.budget} USD`;
+        details.textContent = trip.details ?? `${trip.days} днів, ${trip.budget} USD`;
 
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = 'Деталі';
+        content.append(title);
 
-        // Атрибут data-cost-per-day зі значенням costPerDay(trip) з практикуму 6
-        card.dataset.costPerDay = costPerDay(trip);
+        // Блоки статусу, дат і кнопки є лише в подорожей (у країн цих полів немає)
+        if (trip.status) {
+            // Мітка статусу з практикуму 5 (іконка додається в CSS)
+            const statusWrap = document.createElement('p');
+            statusWrap.classList.add('status-wrap');
+            const status = document.createElement('span');
+            status.classList.add('status', `status-${trip.status}`);
+            status.textContent = trip.statusText;
+            statusWrap.append(status);
 
-        // Умовний клас: budget або expensive
-        if (trip.budget <= BUDGET_LIMIT) {
-            card.classList.add('budget');
-        } else {
-            card.classList.add('expensive');
+            const dates = document.createElement('p');
+            dates.textContent = `Дати: ${trip.dates}`;
+
+            content.append(statusWrap, dates);
         }
 
-        // Виділяємо обрану подорож
-        if (index === selectedIndex) {
+        content.append(details);
+
+        if (trip.status) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = 'Деталі';
+            content.append(button);
+        }
+
+        // Атрибут data-cost-per-day і класи budget/expensive — лише для записів з бюджетом
+        if (trip.budget !== undefined) {
+            // Атрибут data-cost-per-day зі значенням costPerDay(trip) з практикуму 6
+            card.dataset.costPerDay = costPerDay(trip);
+
+            // Умовний клас: budget або expensive
+            if (trip.budget <= BUDGET_LIMIT) {
+                card.classList.add('budget');
+            } else {
+                card.classList.add('expensive');
+            }
+        }
+
+        // Виділяємо обрану подорож (лише в основному списку)
+        if (container === listContainer && index === selectedIndex) {
             card.classList.add('selected');
         }
 
-        content.append(title, statusWrap, dates, details, button);
         card.append(content);
-        listContainer.append(card);
+        container.append(card);
     }
 }
 
@@ -275,6 +292,137 @@ form.addEventListener('submit', event => {
 destinationInput.addEventListener('input', () => {
     destinationInput.setCustomValidity('');
 });
+
+// ===== Практикум 9: клієнт для REST Countries API (варіант 10) =====
+// API: REST Countries v5, https://api.restcountries.com/countries/v5/name?q=<назва країни>
+// (версія v3.1 закрита сервісом, v5 потребує API-ключ; для браузера ключ передаємо параметром api-key)
+// Поля відповіді: data.objects[].names.common, capitals[].name, population, flag.url_png
+const COUNTRIES_API_URL = 'https://api.restcountries.com/countries/v5/name';
+const COUNTRIES_API_KEY = 'rc_live_b01fd96c16ac4a27aec2507f434a6f33';
+
+const countryForm = document.querySelector('#country-form');
+const countryInput = document.querySelector('#country-name');
+const countrySearchBtn = document.querySelector('#country-search-btn');
+const countryRefreshBtn = document.querySelector('#country-refresh-btn');
+const countryLoading = document.querySelector('#country-loading');
+const countryError = document.querySelector('#country-error');
+const countryList = document.querySelector('#country-list');
+
+// Остання успішно надіслана назва — за нею працює кнопка «Оновити»
+let lastCountryQuery = countryInput.value.trim();
+
+// Вмикає/вимикає стан завантаження: текст «Завантаження…» і заблоковані кнопки
+function showLoading(isLoading) {
+    countryLoading.hidden = !isLoading;
+    countrySearchBtn.disabled = isLoading;
+    countryRefreshBtn.disabled = isLoading;
+}
+
+// Показує зрозуміле користувачу повідомлення про помилку (без технічних деталей)
+function showError(message) {
+    countryError.textContent = message;
+    countryError.hidden = false;
+}
+
+// Ховає повідомлення про помилку
+function clearError() {
+    countryError.textContent = '';
+    countryError.hidden = true;
+}
+
+// Адаптер: форма відповіді API -> форма об'єкта, яку розуміє renderTrips
+function countryToItem(country) {
+    const name = country.names?.common ?? 'Без назви';
+    const capital = Array.isArray(country.capitals) && country.capitals.length > 0
+        ? country.capitals.map(c => c.name).join(', ')
+        : 'немає даних';
+    const population = typeof country.population === 'number'
+        ? `${country.population.toLocaleString('uk-UA')} осіб`
+        : 'немає даних';
+    return {
+        destination: name,
+        image: country.flag?.url_png ?? '',
+        alt: `Прапор: ${name}`,
+        details: `Столиця: ${capital}. Населення: ${population}`
+    };
+}
+
+// Запит до REST Countries (https://restcountries.com): async/await + try/catch/finally.
+// Помилки: 404 або порожній список (невідома країна), 401/403 (ключ), інший код статусу, мережевий збій
+async function loadCountry(name) {
+    clearError();
+    showLoading(true);
+
+    try {
+        const url = `${COUNTRIES_API_URL}?q=${encodeURIComponent(name)}&limit=6&api-key=${COUNTRIES_API_KEY}`;
+        const response = await fetch(url);
+
+        // fetch не вважає 404/500 помилкою — перевіряємо статус вручну
+        if (response.status === 404) {
+            throw new CountryNotFoundError(name);
+        }
+        if (response.status === 401 || response.status === 403) {
+            const accessError = new Error(`Доступ заборонено, код ${response.status}`);
+            accessError.userMessage = 'Немає доступу до API: перевірте API-ключ і дозволені адреси сайту.';
+            throw accessError;
+        }
+        if (!response.ok) {
+            throw new Error(`Сервер відповів кодом ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(data);
+
+        // У v5 список країн лежить у data.objects
+        const countries = data?.data?.objects;
+        if (!Array.isArray(countries) || countries.length === 0) {
+            throw new CountryNotFoundError(name);
+        }
+
+        // Повторно використовуємо renderTrips з практикуму 7
+        renderTrips(countries.map(countryToItem), countryList);
+        lastCountryQuery = name;
+    } catch (error) {
+        countryList.innerHTML = '';
+        if (error instanceof CountryNotFoundError) {
+            showError('Країну не знайдено, перевірте написання.');
+        } else if (error.userMessage) {
+            showError(error.userMessage);
+        } else {
+            showError('Не вдалося завантажити дані. Перевірте з’єднання з інтернетом і спробуйте ще раз.');
+        }
+        console.error(error); // деталі — для розробника
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Власний тип помилки для 404 / порожньої відповіді
+class CountryNotFoundError extends Error {
+    constructor(name) {
+        super(`Країну «${name}» не знайдено`);
+        this.name = 'CountryNotFoundError';
+    }
+}
+
+// Надсилання форми пошуку (preventDefault — без перезавантаження сторінки)
+countryForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const name = countryInput.value.trim();
+    if (name === '') {
+        showError('Введіть назву країни.');
+        return;
+    }
+    loadCountry(name);
+});
+
+// Кнопка «Оновити»: повторює останній запит після збою, без перезавантаження сторінки
+countryRefreshBtn.addEventListener('click', () => {
+    loadCountry(lastCountryQuery || countryInput.value.trim() || 'Italy');
+});
+
+// Перше завантаження при відкритті сторінки
+loadCountry(lastCountryQuery);
 
 // ===== Виклики з практикуму 6 =====
 printTripsSummary(trips);
