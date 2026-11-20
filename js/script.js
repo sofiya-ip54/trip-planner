@@ -127,6 +127,10 @@ Vue.createApp({
             selectedId: null,
             form: { destination: '', days: '', budget: '' },
 
+            stops: [],
+            stopForm: { country: '', city: '', dateFrom: '', dateTo: '', notes: '' },
+            dbError: '',
+
             countryQuery: 'Italy',
             lastCountryQuery: 'Italy',
             countries: [],
@@ -138,6 +142,11 @@ Vue.createApp({
     computed: {
         selectedTrip() {
             return this.trips.find(trip => trip.id === this.selectedId) ?? null;
+        },
+
+        // дати у форматі РРРР-ММ-ДД, тому порівнюються як рядки
+        sortedStops() {
+            return [...this.stops].sort((a, b) => a.dateFrom.localeCompare(b.dateFrom));
         },
 
         costHint() {
@@ -161,6 +170,12 @@ Vue.createApp({
         'form.budget': 'validateNumbers',
         'form.destination'() {
             this.$refs.destinationInput.setCustomValidity('');
+        },
+        'stopForm.dateFrom'() {
+            this.$refs.dateToInput.setCustomValidity('');
+        },
+        'stopForm.dateTo'() {
+            this.$refs.dateToInput.setCustomValidity('');
         }
     },
 
@@ -209,6 +224,60 @@ Vue.createApp({
             });
 
             this.form = { destination: '', days: '', budget: '' };
+        },
+
+        formatDate(isoDate) {
+            const [year, month, day] = isoDate.split('-');
+            return `${day}.${month}.${year}`;
+        },
+
+        showDbError(error) {
+            this.dbError = 'Не вдалося працювати з локальною базою даних (можливо, її вимкнено в приватному режимі). Пункти маршруту не збережуться.';
+            console.error(error);
+        },
+
+        async loadStops() {
+            try {
+                await migrateFromLocalStorage();
+                this.stops = await getAllItems();
+            } catch (error) {
+                this.showDbError(error);
+            }
+        },
+
+        async addStop() {
+            const { country, city, dateFrom, dateTo, notes } = this.stopForm;
+
+            if (dateTo < dateFrom) {
+                this.$refs.dateToInput.setCustomValidity('Дата завершення раніше за дату початку');
+                this.$refs.dateToInput.reportValidity();
+                return;
+            }
+
+            try {
+                await addItem({
+                    id: Date.now(),
+                    country: country.trim(),
+                    city: city.trim(),
+                    dateFrom,
+                    dateTo,
+                    notes: notes.trim()
+                });
+                this.stops = await getAllItems();
+                this.dbError = '';
+                this.stopForm = { country: '', city: '', dateFrom: '', dateTo: '', notes: '' };
+            } catch (error) {
+                this.showDbError(error);
+            }
+        },
+
+        async removeStop(id) {
+            try {
+                await deleteItem(id);
+                this.stops = await getAllItems();
+            } catch (error) {
+                this.showDbError(error);
+            }
         },
 
         async loadCountry(name) {
@@ -274,6 +343,7 @@ Vue.createApp({
     mounted() {
         printTripsSummary(this.trips);
         console.log(`Вартість дня в Римі: ${costPerDay(this.trips[2])} USD`);
+        this.loadStops();
         this.loadCountry(this.lastCountryQuery);
     }
 }).mount('#app');

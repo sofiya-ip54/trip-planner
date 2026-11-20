@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/style.css">
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js" defer></script>
+    <script src="js/storage.js" defer></script>
     <script src="js/script.js" defer></script>
 </head>
 <body>
@@ -22,6 +23,7 @@
         <nav>
             <a href="#my-trips">Мої подорожі</a>
             <a href="#add-trip">Нова подорож</a>
+            <a href="#route">Маршрут</a>
             <a href="#country-info">Про країну</a>
             <a href="#trip-details">Деталі подорожі</a>
         </nav>
@@ -82,6 +84,57 @@
 
                     <button type="submit">Додати подорож</button>
                 </form>
+            </section>
+
+            <section id="route">
+                <h2>Маршрут подорожі</h2>
+
+                <p id="db-error" class="country-error" role="alert" v-show="dbError">{{ dbError }}</p>
+
+                <form id="stop-form" @submit.prevent="addStop">
+                    <div class="form-row">
+                        <label for="stop-country">Країна</label>
+                        <input type="text" id="stop-country" required
+                               v-model="stopForm.country" placeholder="Наприклад: Італія">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="stop-city">Місто</label>
+                        <input type="text" id="stop-city" required
+                               v-model="stopForm.city" placeholder="Наприклад: Флоренція">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="stop-from">Дата початку</label>
+                        <input type="date" id="stop-from" required v-model="stopForm.dateFrom">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="stop-to">Дата завершення</label>
+                        <input type="date" id="stop-to" required
+                               ref="dateToInput" v-model="stopForm.dateTo">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="stop-notes">Нотатки</label>
+                        <textarea id="stop-notes" rows="3" v-model="stopForm.notes"
+                                  placeholder="Наприклад: квитки до галереї Уффіці"></textarea>
+                    </div>
+
+                    <button type="submit">Додати пункт</button>
+                </form>
+
+                <ul class="stops" v-if="sortedStops.length > 0">
+                    <li class="stop" v-for="stop in sortedStops" :key="stop.id">
+                        <div class="stop-info">
+                            <strong>{{ stop.city }}, {{ stop.country }}</strong>
+                            <span>{{ formatDate(stop.dateFrom) }} – {{ formatDate(stop.dateTo) }}</span>
+                            <span v-if="stop.notes">{{ stop.notes }}</span>
+                        </div>
+                        <button type="button" class="delete-btn" @click="removeStop(stop.id)">Видалити</button>
+                    </li>
+                </ul>
+                <p id="stops-empty" v-else>У маршруті поки немає пунктів.</p>
             </section>
 
             <section id="country-info">
