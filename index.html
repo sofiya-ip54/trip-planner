@@ -5,17 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Планувальник подорожей</title>
 
-    <!-- Іконка-заглушка: прибирає помилку favicon.ico 404 у консолі -->
     <link rel="icon" href="data:,">
 
-    <!-- Підключення шрифтів Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- Практикум 6–8: підключення скрипта (defer — виконується після побудови DOM) -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js" defer></script>
     <script src="js/script.js" defer></script>
 </head>
 <body>
@@ -30,110 +28,110 @@
     </header>
 
     <div class="layout">
-        <main>
+        <main id="app" v-cloak>
             <section id="my-trips">
                 <h2>Мої подорожі</h2>
 
                 <div class="cards" id="trips-list">
-                    <!-- Картка 1 (статична заглушка з практикуму 2 — прибирається у script.js через .remove()) -->
-                    <article class="card">
-                        <img src="assets/img/paris.jpg" alt="Ейфелева вежа в Парижі">
-                        <div class="card-content">
-                            <h3>Париж, Франція</h3>
-                            <!-- Мітка статусу -->
-                            <p class="status-wrap"><span class="status status-completed">Завершено</span></p>
-                            <p>Дати: 10.10.2026 - 15.10.2026</p>
-                            <button>Деталі</button>
-                        </div>
-                    </article>
-
-                    <!-- Картка 2 -->
-                    <article class="card">
-                        <img src="assets/img/kyoto.jpg" alt="Храм у Кіото восени">
-                        <div class="card-content">
-                            <h3>Кіото, Японія</h3>
-                            <!-- Мітка статусу -->
-                            <p class="status-wrap"><span class="status status-planned">Заплановано</span></p>
-                            <p>Дати: 05.11.2026 - 20.11.2026</p>
-                            <button>Деталі</button>
-                        </div>
-                    </article>
-
-                    <!-- Картка 3 (Рим з новою картинкою) -->
-                    <article class="card">
-                        <img src="assets/img/rome.jpg" alt="Рим, Італія">
-                        <div class="card-content">
-                            <h3>Рим, Італія</h3>
-                            <!-- Мітка статусу -->
-                            <p class="status-wrap"><span class="status status-process">В процесі</span></p>
-                            <p>Дати: 12.12.2026 - 18.12.2026</p>
-                            <button>Деталі</button>
-                        </div>
-                    </article>
+                    <trip-card
+                        v-for="trip in trips"
+                        :key="trip.id"
+                        :destination="trip.destination"
+                        :days="trip.days"
+                        :budget="trip.budget"
+                        :image="trip.image"
+                        :alt="trip.alt"
+                        :status="trip.status"
+                        :status-text="trip.statusText"
+                        :dates="trip.dates"
+                        :selected="trip.id === selectedId"
+                        @select="selectedId = trip.id">
+                    </trip-card>
                 </div>
 
-                <!-- Практикум 7: підсумок, який оновлюється зі script.js -->
-                <p id="trips-count">Подорожей: —</p>
+                <p id="trips-count">Подорожей: {{ trips.length }}</p>
             </section>
 
-            <!-- Практикум 8: форма додавання нової подорожі -->
             <section id="add-trip">
                 <h2>Додати подорож</h2>
 
-                <form id="trip-form">
+                <form id="trip-form" @submit.prevent="addTrip">
                     <div class="form-row">
                         <label for="destination">Напрямок</label>
                         <input type="text" id="destination" name="destination" required
+                               ref="destinationInput" v-model="form.destination"
                                placeholder="Наприклад: Лісабон, Португалія">
                     </div>
 
                     <div class="form-row">
                         <label for="days">Кількість днів</label>
                         <input type="number" id="days" name="days" required min="1" step="1"
+                               ref="daysInput" v-model.number="form.days"
                                placeholder="Наприклад: 5">
                     </div>
 
                     <div class="form-row">
                         <label for="budget">Бюджет, USD</label>
                         <input type="number" id="budget" name="budget" required min="0"
+                               ref="budgetInput" v-model.number="form.budget"
                                placeholder="Наприклад: 800">
                     </div>
 
-                    <!-- Живий перерахунок вартості дня і попередження (додаткова валідація) -->
-                    <p id="cost-hint" class="cost-hint" aria-live="polite">Вартість дня: —</p>
+                    <p id="cost-hint" class="cost-hint" :class="{ warning: costHint.warning }"
+                       aria-live="polite">{{ costHint.text }}</p>
 
                     <button type="submit">Додати подорож</button>
                 </form>
             </section>
 
-            <!-- Практикум 9: клієнт для API REST Countries (варіант 10) -->
             <section id="country-info">
                 <h2>Інформація про країну</h2>
 
-                <form id="country-form">
+                <form id="country-form" @submit.prevent="searchCountry">
                     <div class="form-row">
                         <label for="country-name">Назва країни (англійською)</label>
                         <input type="text" id="country-name" name="country-name" required
-                               value="Italy" placeholder="Наприклад: Portugal">
+                               v-model="countryQuery" placeholder="Наприклад: Portugal">
                     </div>
                     <div class="form-buttons">
-                        <button type="submit" id="country-search-btn">Знайти</button>
-                        <button type="button" id="country-refresh-btn">Оновити</button>
+                        <button type="submit" id="country-search-btn" :disabled="isLoading">Знайти</button>
+                        <button type="button" id="country-refresh-btn" :disabled="isLoading"
+                                @click="refreshCountry">Оновити</button>
                     </div>
                 </form>
 
-                <!-- Стан завантаження і повідомлення про помилку -->
-                <p id="country-loading" class="country-loading" aria-live="polite" hidden>Завантаження…</p>
-                <p id="country-error" class="country-error" role="alert" hidden></p>
+                <p id="country-loading" class="country-loading" aria-live="polite"
+                   v-show="isLoading">Завантаження…</p>
+                <p id="country-error" class="country-error" role="alert"
+                   v-show="countryError">{{ countryError }}</p>
 
-                <div class="cards" id="country-list"></div>
+                <div class="cards" id="country-list">
+                    <country-card
+                        v-for="country in countries"
+                        :key="country.id"
+                        :name="country.name"
+                        :flag="country.flag"
+                        :capital="country.capital"
+                        :population="country.population">
+                    </country-card>
+                </div>
             </section>
 
             <section id="trip-details">
                 <h2>Деталі обраної подорожі</h2>
-                <p id="details-placeholder">Виберіть подорож зі списку, щоб переглянути маршрут і пункти призначення.</p>
-                <!-- Практикум 8: сюди скрипт виводить деталі картки, на яку клікнули -->
-                <div id="trip-info" class="trip-info" hidden></div>
+
+                <p v-if="!selectedTrip">Виберіть подорож зі списку, щоб переглянути маршрут і пункти призначення.</p>
+
+                <div class="trip-info" v-else>
+                    <h3>{{ selectedTrip.destination }}</h3>
+                    <ul>
+                        <li>Статус: {{ selectedTrip.statusText }}</li>
+                        <li>Дати: {{ selectedTrip.dates }}</li>
+                        <li>Тривалість: {{ selectedTrip.days }} днів</li>
+                        <li>Бюджет: {{ selectedTrip.budget }} USD ({{ classifyTrip(selectedTrip) }})</li>
+                        <li>Вартість дня: {{ costPerDay(selectedTrip) }} USD</li>
+                    </ul>
+                </div>
             </section>
         </main>
 
@@ -142,7 +140,6 @@
             <div class="budget-item">Переліт: 500 USD</div>
             <div class="budget-item">Проживання: 700 USD</div>
             <div class="budget-item">Розваги: 300 USD</div>
-            <!-- Суму обгорнуто в span для акцентного стилю -->
             <p class="budget-total">Загальна сума: <span class="budget-accent">1500 USD</span></p>
         </aside>
     </div>

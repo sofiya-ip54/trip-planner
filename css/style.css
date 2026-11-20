@@ -1,8 +1,5 @@
-/* ===== Шрифти (практикум 5) ===== */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap');
 
-/* ===== Колірна схема (практикум 5) =====
-   60 % — нейтральний фон, 30 % — «море», 10 % — теплий акцент */
 :root {
     --bg: #fcf9f2;
     --surface: #ffffff;
@@ -21,13 +18,10 @@
     --progress-fg: #8a4b08; --progress-bg: #fde9d3;
 }
 
-/* ===== Reset ===== */
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
-/* ===== Типографіка ===== */
-/* Шкала: 14 / 16 / 20 / 24 / 28 / 36 px */
 body {
     margin: 0;
     font-family: 'Open Sans', Verdana, Arial, sans-serif;
@@ -47,7 +41,6 @@ img {
     height: auto;
 }
 
-/* ===== Header (Flexbox) ===== */
 header {
     display: flex;
     flex-direction: column;
@@ -85,7 +78,6 @@ header nav a:focus-visible {
     border-bottom-color: #ffffff;
 }
 
-/* ===== Макет: main + aside ===== */
 .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -109,7 +101,6 @@ section h2 {
     margin: 0 0 16px;
 }
 
-/* ===== Картки (Grid) ===== */
 .cards {
     display: grid;
     grid-template-columns: 1fr;
@@ -146,7 +137,6 @@ section h2 {
     padding: 14px;
 }
 
-/* Заголовок картки: 20px (≥ 18px за вимогою варіанта) */
 .card-content h2,
 .card-content h3 {
     font-size: 1.25rem;
@@ -163,7 +153,6 @@ section h2 {
     font-size: 0.875rem;
 }
 
-/* ===== ЧІТКА ВИМОГА: статус подорожі — іконка + текст + власний колір ===== */
 .status {
     display: inline-flex;
     align-items: center;
@@ -183,7 +172,6 @@ section h2 {
 .status-planned::before   { content: "📅"; }
 .status-process::before   { content: "✈"; }
 
-/* ===== Кнопки ===== */
 button {
     font-family: inherit;
     font-size: 1rem;
@@ -208,8 +196,6 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
-/* ===== Практикум 7: стилі для карток, створених через DOM ===== */
-/* Умовні класи за бюджетом: budget / expensive */
 .card.budget {
     border-left: 6px solid var(--done-fg);
 }
@@ -218,14 +204,12 @@ button:focus-visible {
     border-left: 6px solid var(--accent);
 }
 
-/* Підсумок під списком подорожей */
 #trips-count {
     margin: 16px 0 0;
     font-weight: 600;
     color: var(--primary-dark);
 }
 
-/* ===== Aside (бюджет) ===== */
 aside {
     margin: 0;
     padding: 20px;
@@ -249,7 +233,6 @@ aside h2 {
     border-bottom: none;
 }
 
-/* НЕЧІТКА ВИМОГА («надихати на подорожі»): акцентне число бюджету */
 .budget-total {
     margin: 8px 0 0;
     padding-top: 12px;
@@ -266,7 +249,6 @@ aside h2 {
     color: var(--accent);
 }
 
-/* ===== Практикум 8: форма додавання подорожі ===== */
 #trip-form {
     display: grid;
     gap: 16px;
@@ -303,12 +285,10 @@ aside h2 {
     outline-offset: 2px;
 }
 
-/* Поле, яке не пройшло перевірку (після першої взаємодії) */
 .form-row input:user-invalid {
     border-color: var(--accent);
 }
 
-/* Підказка з вартістю дня і попередженням */
 .cost-hint {
     margin: 0;
     font-weight: 600;
@@ -324,7 +304,6 @@ aside h2 {
     justify-self: start;
 }
 
-/* ===== Практикум 8: обрана картка та блок деталей ===== */
 .card {
     cursor: pointer;
 }
@@ -353,12 +332,10 @@ aside h2 {
     padding-left: 20px;
 }
 
-/* Атрибут hidden має перемагати display із класів */
 [hidden] {
     display: none !important;
 }
 
-/* ===== Footer ===== */
 footer {
     background-color: var(--deep-sea);
     color: #e4eef0;
@@ -367,7 +344,7 @@ footer {
     font-size: 0.875rem;
 }
 
-/* ===== Планшет (від 600px) ===== */
+/* адаптивність */
 @media (min-width: 600px) {
     header h1 {
         font-size: 2.25rem;
@@ -378,7 +355,6 @@ footer {
     }
 }
 
-/* ===== Десктоп (від 1024px) ===== */
 @media (min-width: 1024px) {
     header {
         flex-direction: row;
@@ -401,7 +377,6 @@ footer {
     }
 }
 
-/* ===== Практикум 9: клієнт API країн ===== */
 #country-form {
     display: grid;
     gap: 16px;
@@ -463,4 +438,13 @@ button:disabled {
     height: 140px;
     object-fit: contain;
     padding: 12px;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+.card-content .cost-per-day {
+    font-weight: 600;
+    color: var(--primary-dark);
 }
